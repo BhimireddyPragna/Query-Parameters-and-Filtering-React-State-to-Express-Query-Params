@@ -28,18 +28,25 @@ import SortDropdown from "./SortDropdown.jsx";
 
 export default function ThreadList() {
   // TODO: add search + sort state and debounce the search value.
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const debouncedSearch = useDebounce(search, 300);
+
 
   const { data, isPending, isError, error } = useQuery({
-    queryKey: ["threads"], // TODO: make dynamic → ["threads", { search: debouncedSearch, sort }]
-    queryFn: getThreads, // TODO: ({ queryKey }) => getThreads(queryKey[1])
+    queryKey: ["threads", { search: debouncedSearch, sort }], // TODO: make dynamic → ["threads", { search: debouncedSearch, sort }]
+    queryFn: ({ queryKey }) => getThreads(queryKey[1]) , // TODO: ({ queryKey }) => getThreads(queryKey[1])
+    placeholderData: [], // TODO: add placeholderData: keepPreviousData
+    keepPreviousData: true, // TODO: add keepPreviousData: true
+
   });
 
   return (
     <div>
       <div className="filters">
         {/* TODO: wire value + onChange to your state */}
-        <SearchBar value="" onChange={() => {}} />
-        <SortDropdown value="newest" onChange={() => {}} />
+        <SearchBar value={search} onChange={setSearch} />
+        <SortDropdown value={sort} onChange={setSort} />
       </div>
 
       {isError && <p className="err">Error: {error.message}</p>}
